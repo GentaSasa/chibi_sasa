@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+  <arg name="map_file" default="$(find chibi_sasa)/map/map.yaml"/>
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_settings)" output="screen"/>
+  <node pkg="chibi_sasa" type="global_path_planner" name="global_path_planner" output="screen"/>
+  <node pkg="map_server" type="map_server" name="map_server" args="$(arg map_file)"  output="screen"/>
+</launch>
+

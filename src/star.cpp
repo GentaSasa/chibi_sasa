@@ -10,13 +10,21 @@
 //スタートからゴールまでのコスト計算
 //ゴールからスタートまでの最短コストを算出
 //スタートからゴールまでのパスを引く
+//マップ情報を配列からmapメッセージへ
+
+ros::Subscriber no_change_map;
+ros::Publisher changed_map;
 
 int row=0; 
 int col=0;
 double resolution;
-std::vector<std::vector<int>> map_array;
-nav_msgs::OccupancyGrid raw_map;
-std::vector<std::vector<int>> waypoint;
+std::vector<std::vector<int>> map_array;//受け取ったマップを操作するための配列
+nav_msgs::OccupancyGrid raw_map;//マップを扱うメッセージ
+std::vector<std::vector<int>> waypoint;//経由地点
+std::vector<std::vector<int>> cost_map;//マップと同じ大きさの配列でコスト
+
+no_change_map = nh.subscribe("/map",10,&map_receive,this);//subscribeのため
+changed_map = nh.advertise<nav_msgs::OccupancyGrid>("/new_map",1);//publishのため
 
 
 
@@ -35,7 +43,15 @@ int origin_x;
 int origin_y;
 
 //マップを配列へ
-void map_receive(const nav_msgs::OccupancyGrid::ConstPtr &msg)
+
+void star_callback(const nav_msgs::OccupancyGrid::ConstPtr& msg)
+{
+  std::cout<<"callback"<<std::endl;
+  raw_map = *msg;
+
+}  
+
+void map_receive(const nav_msgs::OccupancyGrid::ConstPtr &msg)//callback関数
 {
   raw_map = *msg;
 	if(raw_map.data.size() == 0)
@@ -58,7 +74,8 @@ void map_receive(const nav_msgs::OccupancyGrid::ConstPtr &msg)
 
     origin.x = raw_map.info.origin.position.x;//原点の設定
     origin.y = raw_map.info.origin.position.y;
-
+    
+    std::cout <<origin.x<< std::endl;
     std::cout << "complete map set" << std::endl;
 	}
 }
@@ -90,6 +107,18 @@ void set_point()
 }
 
 //スタートからゴールまでのコスト計算
+void cost4s2g()//ゴールからスタートへコストの逆算をしてる.あってる?
+{
+  
+
+  
+
+  
+
+
+}
+
+
 
 
 
@@ -97,6 +126,23 @@ void set_point()
 
 
 //スタートからゴールまでのパスを引く
+
+
+//マップ情報を配列からmapメッセージへ
+void remap()
+{
+  std::cout<<"remapping"<<std::endl;
+
+  for(int i=0;i<row;i++)//配列情報からros msgに変換
+  {
+    for(int j=0;j<col;j++)
+    {
+      no_change_map.data.push_back(map_array[i][j]);
+    }
+  }
+
+  changed_map.publish(raw_map);
+}
 
 
 int main(int argc, char **argv)
