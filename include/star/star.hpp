@@ -23,8 +23,15 @@ class Astar{
   private:
     void star_callback(const nav_msgs::OccupancyGrid::ConstPtr & msg);
     void set_point();
+
+    void parent_choose();
+    void child_append();
+    void low_grid_select();
+    void cost_calc();
+
     void cost4s2g();
     void remap();
+    void line_draw(); 
 
     int hz_;
     int row_;
@@ -48,8 +55,8 @@ class Astar{
     ros::NodeHandle nh_;
     ros::NodeHandle private_nh_;
 
-    ros::Subscriber no_change_map_;
-    ros::Publisher changed_map_;
+    ros::Subscriber sub_mapper_;
+    ros::Publisher pub_mapper_;
     ros::Publisher pub_path_;
     ros::Publisher pub_wp_path_;
 };

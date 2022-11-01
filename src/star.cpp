@@ -1,21 +1,12 @@
 #include"star/star.hpp"
 
-//マップを配列へ
-//スタート、ゴールノードと経由点の設定
-//スタートからゴールまでのコスト計算
-//ゴールからスタートまでの最短コストを算出
-//スタートからゴールまでのパスを引く
-//マップ情報を配列からmapメッセージへ
-
 Astar::Astar():private_nh_("~")
 {
     private_nh_.param("hz_", hz_, {10});
-    no_change_map_ = nh_.subscribe("/new_map", 10, &Astar::star_callback, this);
+    sub_mapper_ = nh_.subscribe("/new_map", 10, &Astar::star_callback, this);
     pub_path_ = nh_.advertise<nav_msgs::Path>("/global_path", 1);
     pub_wp_path_ = nh_.advertise<nav_msgs::Path>("/wp_path", 1);
 }
-
-
 
 //マップを配列へ
 void Astar::star_callback(const nav_msgs::OccupancyGrid::ConstPtr &msg)//callback関数
@@ -73,6 +64,7 @@ void Astar::set_point()
 }
 
 
+//コスト計算
 void Astar::cost_calc()
 {
 
@@ -81,28 +73,46 @@ void Astar::cost_calc()
 
 }
 
-//コスト計算
 //オープンリストの中から最もコストの低いノードを選択
+void Astar::low_grid_select()
+{
+
+}
+
 //選択したノードを親ノードとする
+void Astar::parent_chose()
+{
+
+}
 //親ノードの周りの４つのノードをオープンリストへ追加
+void Astar::child_append()
+{
+
+}
 //オープンリストの中のから最もコストの低いノードを次の親とする
 
+
+
+//ゴールからスタートまでの最短コストを算出
 void Astar::cost4s2g()
 {
   for(int i=0;i<4;i++)
   {
-    if()
+    if( i==3)
     {
 
     }
+  }
 }
 
 
-//ゴールからスタートまでの最短コストを算出
 
 
 //スタートからゴールまでのパスを引く
+void Astar::line_draw()
+{
 
+}
 
 //マップ情報を配列からmapメッセージへ
 void Astar::remap()
@@ -116,7 +126,7 @@ void Astar::remap()
       raw_map_.data.push_back(map_array_[i][j]);
     }
   }
-  changed_map_.publish(raw_map_);
+  pub_mapper_.publish(raw_map_);
 }
 
 //process関数
@@ -126,8 +136,24 @@ void Astar::process()
   ros::Rate loop_rate(hz_);
   while(ros::ok())
   {
+    set_point();//ウェイポイントの設定
+    for(int i= 0;i<waypoint_.size();i++)//経由するウェイポイント分だけループする
+    {
+      while(is_reached_!=true)
+      {
+        if(parent_grid_.x==x_waypoint_ && parent_grid_.y==y_waypoint_)
+        {
+          is_reached_ = true;
+        }
+        else
+        {
+          set_child_node();
+          cost_update():
+        }
 
+      }
 
+    }
     pub_path_.publish(global_path_);
     ros::spinOnce();
     loop_rate.sleep();
